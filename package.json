@@ -1,0 +1,27 @@
+{
+  "name": "x-castle-attack-bot",
+  "version": "1.0.0",
+  "description": "Reverse-engineering harness for Castle.io's fingerprinting bundle as deployed on x.com (2026-05-21). Demonstrates input-side value tampering producing valid live tokens. Companion to Castle.md.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "postinstall": "npx playwright install chromium",
+    "start": "node main.mjs",
+    "main": "node main.mjs",
+    "recon": "node recon.mjs",
+    "stackwalk": "node stackwalk.mjs",
+    "bytetap": "node bytetap.mjs",
+    "readtap": "node readtap.mjs",
+    "submit": "node submit.mjs",
+    "headers": "node headers.mjs",
+    "tamper": "node tamper.mjs",
+    "dom-probe": "node dom-probe.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.57.0",
+    "prompts": "^2.4.2"
+  }
+}

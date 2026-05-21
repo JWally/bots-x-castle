@@ -1,0 +1,825 @@
+{
+  "ts": "2026-05-21T21:00:59.540Z",
+  "baseline": {
+    "sigMap": {
+      "storage:localStorage.getItem": {
+        "count": 3,
+        "samples": [
+          {
+            "key": "__cuid",
+            "value": null
+          }
+        ]
+      },
+      "document:cookie": {
+        "count": 1,
+        "samples": [
+          "guest_id_marketing=v1%3A177939718399561173; guest_id_ads=v1%3A177939718399561173; guest_id=v1%3A177939718399561173; personalization_id=\"v1_7N9rsUO1U3bm5RMgj6AH0g==\"; gt=2057567037166133749"
+        ]
+      },
+      "webgl:WebGL1.getExtension": {
+        "count": 8,
+        "samples": [
+          "WEBGL_debug_renderer_info"
+        ]
+      },
+      "webgl:WebGL1.getParameter": {
+        "count": 8,
+        "samples": [
+          "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+        ]
+      },
+      "navigator:platform": {
+        "count": 5,
+        "samples": [
+          "Linux x86_64"
+        ]
+      },
+      "navigator:vendor": {
+        "count": 4,
+        "samples": [
+          "Google Inc."
+        ]
+      },
+      "navigator:hardwareConcurrency": {
+        "count": 3,
+        "samples": [
+          12
+        ]
+      },
+      "navigator:deviceMemory": {
+        "count": 3,
+        "samples": [
+          8
+        ]
+      },
+      "navigator:plugins": {
+        "count": 1,
+        "samples": [
+          {}
+        ]
+      },
+      "screen:availWidth": {
+        "count": 2,
+        "samples": [
+          1280
+        ]
+      },
+      "navigator:pdfViewerEnabled": {
+        "count": 1,
+        "samples": [
+          false
+        ]
+      },
+      "navigator:userAgent": {
+        "count": 9,
+        "samples": [
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ]
+      },
+      "navigator:userAgentData": {
+        "count": 4,
+        "samples": [
+          {}
+        ]
+      },
+      "uaData:getHighEntropyValues": {
+        "count": 1,
+        "samples": [
+          {
+            "args": [
+              []
+            ],
+            "result": {}
+          }
+        ]
+      },
+      "canvas:fillText": {
+        "count": 302,
+        "samples": [
+          {
+            "text": "Hello Canvas",
+            "x": 20,
+            "y": 150
+          }
+        ]
+      },
+      "canvas:toDataURL": {
+        "count": 20,
+        "samples": [
+          {
+            "len": 8626
+          }
+        ]
+      },
+      "canvas:getImageData": {
+        "count": 23,
+        "samples": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 200,
+            "h": 200
+          }
+        ]
+      },
+      "window:outerWidth": {
+        "count": 2,
+        "samples": [
+          1280
+        ]
+      },
+      "window:innerWidth": {
+        "count": 4,
+        "samples": [
+          1280
+        ]
+      },
+      "screen:width": {
+        "count": 3,
+        "samples": [
+          1280
+        ]
+      },
+      "window:outerHeight": {
+        "count": 4,
+        "samples": [
+          800
+        ]
+      },
+      "screen:height": {
+        "count": 3,
+        "samples": [
+          800
+        ]
+      },
+      "screen:colorDepth": {
+        "count": 3,
+        "samples": [
+          24
+        ]
+      },
+      "screen:pixelDepth": {
+        "count": 1,
+        "samples": [
+          24
+        ]
+      },
+      "matchMedia:(prefers-color-scheme: light)": {
+        "count": 1,
+        "samples": [
+          true
+        ]
+      },
+      "canvas:measureText": {
+        "count": 295,
+        "samples": [
+          {
+            "text": "mmmmmmmmmmlli",
+            "width": 782.666015625
+          }
+        ]
+      },
+      "navigator:webdriver": {
+        "count": 2,
+        "samples": [
+          true
+        ]
+      },
+      "window:devicePixelRatio": {
+        "count": 2,
+        "samples": [
+          1
+        ]
+      },
+      "window:innerHeight": {
+        "count": 3,
+        "samples": [
+          800
+        ]
+      },
+      "navigator:mimeTypes": {
+        "count": 4,
+        "samples": [
+          {}
+        ]
+      },
+      "navigator:cookieEnabled": {
+        "count": 1,
+        "samples": [
+          true
+        ]
+      },
+      "navigator:appVersion": {
+        "count": 1,
+        "samples": [
+          "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ]
+      },
+      "matchMedia:(dynamic-range: high)": {
+        "count": 1,
+        "samples": [
+          false
+        ]
+      },
+      "screen:availHeight": {
+        "count": 2,
+        "samples": [
+          800
+        ]
+      },
+      "navigator:language": {
+        "count": 4,
+        "samples": [
+          "en-US"
+        ]
+      },
+      "navigator:languages": {
+        "count": 10,
+        "samples": [
+          [
+            "en-US"
+          ]
+        ]
+      },
+      "navigator:doNotTrack": {
+        "count": 3,
+        "samples": [
+          null
+        ]
+      },
+      "navigator:maxTouchPoints": {
+        "count": 6,
+        "samples": [
+          0
+        ]
+      },
+      "navigator:productSub": {
+        "count": 6,
+        "samples": [
+          "20030107"
+        ]
+      }
+    },
+    "btoaCount": 1345,
+    "apiHits": [
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 488,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json?flow_name=login",
+        "bodyInfo": {
+          "len": 928,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json",
+        "bodyInfo": {
+          "len": 861,
+          "longBase64Lens": [
+            352
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 3950,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json",
+        "bodyInfo": {
+          "len": 14879,
+          "longBase64Lens": [
+            14544
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 621,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      }
+    ],
+    "submitted": true,
+    "submitErr": null
+  },
+  "tampered": {
+    "sigMap": {
+      "storage:localStorage.getItem": {
+        "count": 3,
+        "samples": [
+          {
+            "key": "__cuid",
+            "value": null
+          }
+        ]
+      },
+      "document:cookie": {
+        "count": 1,
+        "samples": [
+          "guest_id_marketing=v1%3A177939722187382105; guest_id_ads=v1%3A177939722187382105; guest_id=v1%3A177939722187382105; personalization_id=\"v1_zpTEqOzRTtX6JQVGkwJgFA==\"; gt=2057567195882815849"
+        ]
+      },
+      "webgl:WebGL1.getExtension": {
+        "count": 8,
+        "samples": [
+          "WEBGL_debug_renderer_info"
+        ]
+      },
+      "webgl:WebGL1.getParameter": {
+        "count": 8,
+        "samples": [
+          "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0)"
+        ]
+      },
+      "navigator:platform": {
+        "count": 5,
+        "samples": [
+          "Win32"
+        ]
+      },
+      "navigator:vendor": {
+        "count": 4,
+        "samples": [
+          "Google Inc."
+        ]
+      },
+      "navigator:hardwareConcurrency": {
+        "count": 4,
+        "samples": [
+          8
+        ]
+      },
+      "navigator:deviceMemory": {
+        "count": 4,
+        "samples": [
+          16
+        ]
+      },
+      "navigator:plugins": {
+        "count": 2,
+        "samples": [
+          [
+            {
+              "name": "PDF Viewer",
+              "description": "Portable Document Format",
+              "filename": "internal-pdf-viewer",
+              "length": 0,
+              "item": "[fn]",
+              "namedItem": "[fn]"
+            },
+            {
+              "name": "Chrome PDF Viewer",
+              "description": "Portable Document Format",
+              "filename": "internal-pdf-viewer",
+              "length": 0,
+              "item": "[fn]",
+              "namedItem": "[fn]"
+            },
+            {
+              "name": "Chromium PDF Viewer",
+              "description": "Portable Document Format",
+              "filename": "internal-pdf-viewer",
+              "length": 0,
+              "item": "[fn]",
+              "namedItem": "[fn]"
+            },
+            {
+              "name": "Microsoft Edge PDF Viewer",
+              "description": "Portable Document Format",
+              "filename": "internal-pdf-viewer",
+              "length": 0,
+              "item": "[fn]",
+              "namedItem": "[fn]"
+            },
+            {
+              "name": "WebKit built-in PDF",
+              "description": "Portable Document Format",
+              "filename": "internal-pdf-viewer",
+              "length": 0,
+              "item": "[fn]",
+              "namedItem": "[fn]"
+            }
+          ]
+        ]
+      },
+      "navigator:languages": {
+        "count": 11,
+        "samples": [
+          [
+            "en-US",
+            "en"
+          ]
+        ]
+      },
+      "navigator:language": {
+        "count": 5,
+        "samples": [
+          "en-US"
+        ]
+      },
+      "navigator:mimeTypes": {
+        "count": 5,
+        "samples": [
+          [
+            {
+              "type": "application/pdf",
+              "description": "",
+              "suffixes": "pdf",
+              "enabledPlugin": {
+                "name": "PDF Viewer",
+                "description": "Portable Document Format",
+                "filename": "internal-pdf-viewer",
+                "length": 0,
+                "item": "[fn]",
+                "namedItem": "[fn]"
+              }
+            },
+            {
+              "type": "text/pdf",
+              "description": "",
+              "suffixes": "pdf",
+              "enabledPlugin": {
+                "name": "PDF Viewer",
+                "description": "Portable Document Format",
+                "filename": "internal-pdf-viewer",
+                "length": 0,
+                "item": "[fn]",
+                "namedItem": "[fn]"
+              }
+            }
+          ]
+        ]
+      },
+      "navigator:userAgent": {
+        "count": 10,
+        "samples": [
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ]
+      },
+      "navigator:webdriver": {
+        "count": 3,
+        "samples": [
+          null
+        ]
+      },
+      "navigator:userAgentData": {
+        "count": 5,
+        "samples": [
+          {
+            "brands": [
+              {
+                "brand": "Not_A Brand",
+                "version": "8"
+              },
+              {
+                "brand": "Chromium",
+                "version": "131"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "131"
+              }
+            ],
+            "mobile": false,
+            "platform": "Windows",
+            "getHighEntropyValues": "[fn]",
+            "toJSON": "[fn]"
+          }
+        ]
+      },
+      "navigator:cookieEnabled": {
+        "count": 2,
+        "samples": [
+          true
+        ]
+      },
+      "navigator:productSub": {
+        "count": 7,
+        "samples": [
+          "20030107"
+        ]
+      },
+      "matchMedia:(prefers-color-scheme: light)": {
+        "count": 1,
+        "samples": [
+          true
+        ]
+      },
+      "canvas:measureText": {
+        "count": 295,
+        "samples": [
+          {
+            "text": "mmmmmmmmmmlli",
+            "width": 782.666015625
+          }
+        ]
+      },
+      "screen:availWidth": {
+        "count": 2,
+        "samples": [
+          1920
+        ]
+      },
+      "navigator:pdfViewerEnabled": {
+        "count": 1,
+        "samples": [
+          true
+        ]
+      },
+      "canvas:fillText": {
+        "count": 302,
+        "samples": [
+          {
+            "text": "Hello Canvas",
+            "x": 20,
+            "y": 150
+          }
+        ]
+      },
+      "canvas:toDataURL": {
+        "count": 20,
+        "samples": [
+          {
+            "len": 8626
+          }
+        ]
+      },
+      "canvas:getImageData": {
+        "count": 23,
+        "samples": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 200,
+            "h": 200
+          }
+        ]
+      },
+      "window:outerWidth": {
+        "count": 2,
+        "samples": [
+          1280
+        ]
+      },
+      "window:innerWidth": {
+        "count": 4,
+        "samples": [
+          1280
+        ]
+      },
+      "screen:width": {
+        "count": 3,
+        "samples": [
+          1920
+        ]
+      },
+      "window:outerHeight": {
+        "count": 3,
+        "samples": [
+          800
+        ]
+      },
+      "screen:height": {
+        "count": 3,
+        "samples": [
+          1080
+        ]
+      },
+      "screen:colorDepth": {
+        "count": 3,
+        "samples": [
+          24
+        ]
+      },
+      "screen:pixelDepth": {
+        "count": 1,
+        "samples": [
+          24
+        ]
+      },
+      "window:devicePixelRatio": {
+        "count": 2,
+        "samples": [
+          1
+        ]
+      },
+      "window:innerHeight": {
+        "count": 3,
+        "samples": [
+          800
+        ]
+      },
+      "navigator:appVersion": {
+        "count": 1,
+        "samples": [
+          "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ]
+      },
+      "matchMedia:(dynamic-range: high)": {
+        "count": 1,
+        "samples": [
+          false
+        ]
+      },
+      "screen:availHeight": {
+        "count": 2,
+        "samples": [
+          1040
+        ]
+      },
+      "navigator:oscpu": {
+        "count": 3,
+        "samples": [
+          null
+        ]
+      },
+      "navigator:doNotTrack": {
+        "count": 3,
+        "samples": [
+          null
+        ]
+      },
+      "navigator:maxTouchPoints": {
+        "count": 6,
+        "samples": [
+          0
+        ]
+      }
+    },
+    "btoaCount": 1345,
+    "apiHits": [
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 488,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json?flow_name=login",
+        "bodyInfo": {
+          "len": 928,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json",
+        "bodyInfo": {
+          "len": 864,
+          "longBase64Lens": [
+            352
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 3950,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/task.json",
+        "bodyInfo": {
+          "len": 14643,
+          "longBase64Lens": [
+            14308
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/graphql/user_flow.json",
+        "bodyInfo": {
+          "len": 621,
+          "longBase64Lens": []
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://api.x.com/1.1/onboarding/sso_init.json",
+        "bodyInfo": {
+          "len": 20,
+          "longBase64Lens": []
+        }
+      }
+    ],
+    "submitted": true,
+    "submitErr": null,
+    "lies": {
+      "navigator.webdriver": {
+        "lied": "undefined"
+      },
+      "navigator.userAgent": {
+        "lied": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)…"
+      },
+      "navigator.appVersion": {
+        "lied": "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/…"
+      },
+      "navigator.platform": {
+        "lied": "Win32"
+      },
+      "navigator.hardwareConcurrency": {
+        "lied": 8
+      },
+      "navigator.deviceMemory": {
+        "lied": 16
+      },
+      "navigator.userAgentData.platform": {
+        "lied": "Windows"
+      },
+      "navigator.plugins.length": {
+        "lied": 5
+      },
+      "navigator.mimeTypes.length": {
+        "lied": 2
+      },
+      "WebGL.getParameter(37446)": {
+        "lied": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0)"
+      },
+      "WebGL.getParameter(37445)": {
+        "lied": "Google Inc. (NVIDIA)"
+      },
+      "screen.width": {
+        "lied": 1920
+      },
+      "screen.height": {
+        "lied": 1080
+      },
+      "devicePixelRatio": {
+        "lied": 1
+      },
+      "matchMedia(device-width:1920)": {
+        "lied": true
+      },
+      "matchMedia(device-height:1080)": {
+        "lied": true
+      },
+      "matchMedia(max-resolution:96dpi)": {
+        "lied": true
+      }
+    }
+  }
+}
