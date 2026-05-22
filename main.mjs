@@ -81,6 +81,28 @@ const SCRIPTS = [
       'POST /1.1/onboarding/task.json (14760 base64 chars on submit). ~1 min.',
   },
   {
+    file: 'decrypt.mjs',
+    title: '★ decrypt      — pull a live token and decrypt it with tv()',
+    desc:
+      'Hooks btoa to capture the largest tt()-attributed call from x.com, ' +
+      'then decrypts it using the bundle\'s own inverse function (tv) we ' +
+      'extracted into castle-cipher.mjs. Confirms the cipher pair is fully ' +
+      'reversed: Castle ships its own inverse in the bundle for build-time ' +
+      'string deobfuscation, and that same inverse decrypts the runtime ' +
+      'token byte-for-byte. Reveals the TLV-shaped plaintext structure. ~1 min.',
+  },
+  {
+    file: 'castle-tt-instrument.mjs',
+    title: '  tt-trace     — log every tt() call (input + output)',
+    desc:
+      'In-flight bundle patch wrapping every `function tt(n){...}` in the ' +
+      'chunk to log its input char codes and output base64. Use this to ' +
+      'see the per-field plaintext values that get fed to the token cipher: ' +
+      'timestamps, hex hashes (canvas/font/audio), empty literals, and the ' +
+      'aggregated TLV payload. Each plaintext is recoverable via tv() ' +
+      'applied to the captured output. ~1 min.',
+  },
+  {
     file: 'dom-probe.mjs',
     title: '  dom-probe    — DOM dump diagnostic',
     desc:

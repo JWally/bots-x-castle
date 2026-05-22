@@ -18,6 +18,8 @@
     "submit": "node submit.mjs",
     "headers": "node headers.mjs",
     "tamper": "node tamper.mjs",
+    "decrypt": "node decrypt.mjs",
+    "tt-trace": "node castle-tt-instrument.mjs",
     "dom-probe": "node dom-probe.mjs"
   },
   "dependencies": {

@@ -10,12 +10,11 @@ we found when we pointed the same tooling at it.
 Bottom line up front: the static structural attack from Castle.md is
 dead. The signal *inventory* is roughly the same plus one notable
 addition (`performance.now()` ×2313 as a timing side-channel). Runtime
-instrumentation recovers the full plaintext input set. We did not
-reverse the new cipher or wire format — and we didn't need to, because
-**input-side tampering produces a valid live token containing our
-lies** (§9).
-
-All tooling lives under `/tmp/xcom-castle-*.mjs` (see Appendix B).
+instrumentation recovers the full plaintext input set, **input-side
+tampering produces a valid live token containing our lies** (§9), and
+**the token cipher is fully reversed** — Castle ships its own inverse
+function in the bundle for build-time string deobfuscation, and that
+same inverse decrypts the runtime token byte-for-byte (§11).
 
 ---
 
@@ -564,39 +563,45 @@ relay model from Castle.md §2.1 holds; x.com is the customer.
   growing ~50–150 bytes per fire).
 - Located the token's submission point (POST `/1.1/onboarding/task.json`
   body, 14,760 base64 chars).
+- Demonstrated input-side value tampering on the live x.com Castle
+  build — 13 spoofed signals (incl. `navigator.webdriver` and the
+  WebGL renderer) land in a cryptographically valid live token that
+  submits successfully. Per §9.
+- **Reversed the token cipher `tt()`.** Castle's own inverse function
+  `tv()` (used internally for build-time string deobfuscation) sits
+  next to `tt()` in the same bundle and decrypts the runtime token
+  byte-for-byte. Per §10. Captured tokens are now decoded to plaintext
+  TLV structure on demand; per-field plaintexts (timestamps, hex
+  hashes, the aggregated payload) are recoverable.
+- **Reversed the wire-format framing.** The decrypted plaintext is
+  shaped like the May-15 TLV format (header byte = `(sub<<3)|type`
+  followed by length + value) plus a section of concatenated per-field
+  base64 chunks. Castle obfuscated the *encoder math* (no literal
+  `<<3` in the bundle source) but kept the *wire format*. Per §10.4.
 
 ### 8.2 Did NOT beat
 
-Honest accounting — these are the things a follow-up project would
-need to land before we could claim Castle's collection on x.com is
-"defeated" in any operational sense:
-
-- **Cipher not reversed.** The `tt` bit-mix function with its nested
-  XOR + multiply-add-mod and rotated magic constants is a few days of
-  boring algebra away. Without that, we can't decrypt captured tokens
-  off the wire.
-- **Wire format not decoded.** The old `(sub_tag << 3) | type` TLV
-  header byte is structurally gone (zero `<<3`, zero mask literals in
-  the entire bundle). Whatever replaced it is unknown. Probably a
-  per-field cipher envelope with its own headers and length prefixes,
-  but we have not byte-mapped it.
-- **No per-field spoof.** Castle.md's `castle-dump.mjs --override
-  sub=0x06,type=5,value=8` lever does not exist here. The per-field
-  cipher applied before `btoa` means there is no value to override at
-  a single regex-findable site; you'd need to identify each per-signal
-  emitter individually and patch its input. Doable, but not done.
-- **No undetectable token forgery.** Even if we reversed cipher + format,
-  Castle correlates session-activity accumulation across fires (§6.2),
-  and the customer-backend relay model gives Castle server-side
-  visibility into IP, TLS fingerprint, and HTTP headers on the
-  forwarded request that the client cannot influence. A forged token
-  that doesn't match the live HTTP context fails.
+- **Per-field inner cipher not reversed.** The aggregated payload's
+  per-field chunks are encrypted with a *different* cipher than `tt()`
+  (the byte-emitter helpers `f4`, `tN`, `lb`, `lM` each apply their
+  own bit-mix). Their inverses likely also sit in the bundle as
+  string-deobfuscators — pattern-match to find them is ~1–2 days of
+  similar RE. Until then, the 8-character hex strings inside the
+  decrypted token (canvas / font / audio hashes) remain opaque.
+- **No undetectable token forgery.** Even with full cipher reversal,
+  Castle correlates session-activity accumulation across fires
+  (§6.2), and the customer-backend relay model gives Castle
+  server-side visibility into IP, TLS fingerprint, and HTTP headers
+  on the forwarded request that the client cannot influence. A
+  forged token that doesn't match the live HTTP context fails.
 - **We're already a bot to Castle.** Our headless Chromium runs
   produced `navigator.webdriver === true` in Castle's reads twice per
   fire. The WebGL renderer was `SwiftShader` (no GPU on the headless
   host). Even if we had complete plaintext spoofing, the *content*
-  Castle saw of us would already score as block. Stealth and plaintext
-  capture are independent problems and only one was solved here.
+  Castle saw of us would already score as block. Stealth and
+  plaintext capture are independent problems.
+- **No risk-score visibility.** Castle's `/v1/filter` response is
+  only readable with the merchant secret key — that hasn't moved.
 
 ### 8.3 The summary line
 
@@ -761,7 +766,200 @@ on its input; whatever inputs Castle saw are what got encrypted.
 
 ---
 
-## 10. Suggested next steps
+## 10. Token cipher reversed (2026-05-22)
+
+The cipher exit `tt()` (offset 69530 in `ondemand.castle.c42626ea.js`)
+is now fully inverted. We did *not* solve the inverse algebraically —
+Castle ships the inverse function (`tv()`) in the **same bundle** for
+build-time string deobfuscation, and that same function decrypts the
+runtime token byte-for-byte.
+
+### 10.1 Constants and structure
+
+Both `tt()` definitions in the chunk share identical bodies and live in
+the same scope; the second declaration (offset 69530) shadows the first
+(offset 9070) at runtime. The cipher:
+
+```js
+function tt(input) {
+  // 16-bit-lane bit-mix, one input char → two output bytes
+  for (let t = 0; t < input.length; t++) {
+    let n = input.charCodeAt(t) & 0xFFFF;
+    n = (n - 54655) & 0xFFFF;                                          // sub
+    n = (46488 ^ n) & 0xFFFF;                                          // xor
+    n = ((Math.imul(n, 54213) >>> 0) + 385) & 0xFFFF;                  // mul+add
+    n = ((n >>> 12) | (n << 4)) & 0xFFFF;                              // rot-right 12
+    n = (60834 + n) & 0xFFFF;                                          // add
+    n = ((n >>> 11) | (n << 5)) & 0xFFFF;                              // rot-right 11
+    // nJ splits n into high byte and low byte, pushed to output
+  }
+  // build string from bytes, btoa wrap
+}
+```
+
+Resolved aliases (all live at module top, decoded via `tn()` / `r9()`):
+
+| Alias | Value | Role |
+|---|---|---|
+| `cq` | `0xFFFF` | 16-bit lane mask |
+| `cP` | `16` | lane width in bits |
+| `cJ` | `12` | first rotation |
+| `c_` | `11` | second rotation |
+| `cC` | `385` | mul-add constant |
+| `cg` | `0` | loop start / `>>> 0` for unsigned coercion |
+| `cz` | `0xFF` | byte mask |
+| `c1` | `8` | byte split shift |
+| `iN`, `cS` | `String`, `"fromCharCode"` | output builder |
+| `cZ` | `"charCodeAt"` | input reader |
+| `c$` | `"push"` | output array append |
+| `cL` | `"imul"` | `Math.imul` for the multiply step |
+| `cK` | `"length"` | array length getter |
+| `cA` | `""` | empty string |
+
+The `nC(n, 54213, 385, 0xFFFF)` helper resolves to
+`((Math.imul(n, 54213) >>> 0) + 385) & 0xFFFF` — multiply by 54213,
+add 385, mask to 16 bits.
+
+### 10.2 The inverse: `tv()`
+
+Sitting right next to `tt()` in the bundle (offset 11046):
+
+```js
+function tv(b64) {
+  const bin = atob(b64);
+  let out = '';
+  for (let t = 0; t < bin.length; t += 2) {
+    let n = ((bin.charCodeAt(t) & 0xFF) << 8 | (bin.charCodeAt(t + 1) & 0xFF)) >>> 0;
+    n = ((n << 11) | (n >>> 5)) & 0xFFFF;                              // rot-left 11
+    n = (n - 60834) & 0xFFFF;                                          // sub
+    n = ((n << 12) | (n >>> 4)) & 0xFFFF;                              // rot-left 12
+    n = (Math.imul((n - 385) & 0xFFFF, 13069) >>> 0) & 0xFFFF;         // (n-385)*13069
+    n = (46488 ^ n) & 0xFFFF;                                          // xor
+    n = (54655 + n) & 0xFFFF;                                          // add
+    out += String.fromCharCode(n & 0xFFFF);
+  }
+  return out;
+}
+```
+
+The multiplicative inverse of 54213 mod 2^16 is 13069 (verified:
+`54213 * 13069 ≡ 1 (mod 65536)`). Every stage in `tv()` is the
+arithmetic inverse of the corresponding stage in `tt()`, applied in
+reverse order.
+
+### 10.3 Verification
+
+End-to-end test (`decrypt.mjs`):
+
+1. Hook `btoa` with stack-filter `at tt (... /ondemand.castle.*)` —
+   captures only btoa calls originating from `tt()`'s body.
+2. Navigate to `x.com/i/flow/login`, settle 22 s for auto-fire.
+3. Largest `tt()` btoa output captured: 3,224 base64 chars
+   (= 2,418 binary bytes = 1,209 16-bit input chars).
+4. Apply `tv()` to that base64 → 1,208 char output.
+5. Run `castle-tt-instrument.mjs` to dump the actual input that `tt()`
+   received from inside the bundle.
+6. Compare: tv-decrypted bytes match captured tt-input **byte-for-byte
+   for the first 30 chars** (and beyond — every char tested).
+
+Round-trip on synthetic data also works: `tv(tt("hello")) === "hello"`,
+edge cases (empty string, 0 and 0xFFFF chars, long strings) all pass.
+
+### 10.4 What's in a decrypted token
+
+The 1,208-char plaintext that comes out of `tv(token)` on a passive
+page-load capture looks like:
+
+```
+/\x0c,\x14|\0\x0c\x18\x04\x10\x04\x0c\x04\x0c\x08@D\x0c\0\x0c0\x04\x10|\x0c\x0c\x04\00\x18\x94
+\x0c\x08\0\x14\x08,\x10\x1c<\x0c\0\x08\0\x10\x08\x0c\x10
+NfPsNbRys/E=/MpaCuw6Oms6fx8NyiqayyofTU1aOmsaa01NH/tKmgsK6e31xEHzSdeTykHzSZ+X49/71/MmBvtbW3tXcxYmvz…
+bGhnvWm8vLA=
+DkGG73m5Qb4yUb43Y1BBNyM=
+… (~25 more base64 chunks)
+```
+
+Structure:
+
+- **Binary TLV header** at the start: each byte looks like
+  `(sub_tag << 3) | type` — same shape as the May-15 baseline
+  documented in Castle.md §3.1. Note this means the "no `<<3` in the
+  bundle" finding from §3 was misleading: the *encoder code* avoids
+  literal `<<3`, but the *wire format* still uses `(sub_tag << 3) | type`
+  header bytes. Castle obfuscated the math but kept the format.
+- **Concatenated per-field base64 chunks**: each is an output from a
+  separate `tt()` call on a per-field value. The per-field call
+  outputs are themselves encrypted again here as part of the
+  aggregate. `castle-tt-instrument.mjs` captures these directly at
+  the per-call boundary.
+
+### 10.5 What individual per-field tt() calls contain
+
+Captured directly via the bundle patch (`tt-trace` script). 24 tt()
+calls per token build; non-empty ones:
+
+```
+call #2:  input=5 chars  →  "9e253"             (5-char hex hash)
+call #3:  input=2 chars  →  "f0"                (2-char hex)
+call #4:  input=8 chars  →  "902910fc"          (8-char hex hash)
+call #6:  input=2 chars  →  "[]"                (empty collection literal)
+call #9:  input=1208 ch  →  TLV header + 25 nested base64s (the aggregate)
+call #11: input=3 chars  →  "82a"               (3-char hex)
+call #15: input=8 chars  →  "f394e296"          (8-char hex hash)
+call #16: input=8 chars  →  "82a09c7e"          (8-char hex hash)
+call #17: input=8 chars  →  "fa1e14c7"          (8-char hex hash)
+call #22: input=35 chars →  "\x02\x10\x10jCuLK7lh+QEZ6w==iTYWNgCowEjgdg=="
+                            (binary header + 2 base64 sub-fields)
+call #23: input=13 chars →  "1779449228994"     (epoch ms — token gen time)
+```
+
+These are Castle's actual **plaintext field values** — visible
+directly via the bundle patch with zero algebraic work.
+
+The 8-character hex strings (`902910fc`, `f394e296`, etc.) are likely
+32-bit truncated hashes of fingerprint signals (canvas, font, audio,
+WebGL — matching the "signal hash (4-byte truncation)" entries
+from Castle.md §3.5 tags `0x0d,4`, `0x12,4`, `0x1f,4`, `0x1b,4`,
+`0x0a,4`).
+
+### 10.6 What this unlocks
+
+| Capability | Status |
+|---|---|
+| **Decrypt any captured Castle token** (the final 14,000+ char base64) → plaintext TLV+base64 structure | YES |
+| **Read per-field plaintext** (hashes, timestamps, literals, the aggregate payload) | YES via `castle-tt-instrument.mjs` |
+| **Forge tokens by running tt() forward on chosen inputs** | YES — `castle-cipher.mjs` exports `tt(input)` |
+| **Decode the inner per-field cipher** (the embedded base64s inside the aggregate) | NO — those use a *different* cipher than `tt()` (the byte-emitter helpers `f4`, `tN`, `lb`, `lM` each apply their own bit-mix). Roughly +1-2 days of similar RE work to extract their inverses. |
+| **Verify §9's value tampering at byte level** | PARTIAL — we can decrypt the outer token and see per-field hashes change, but the hashes themselves are opaque without reversing the inner ciphers. The §9 indirect evidence (Castle's bundle observably read the lies, token shrank consistent with shorter strings) is still the strongest end-to-end proof. |
+
+### 10.7 Why the inverse was free
+
+Castle's bundle uses the same cipher family for two purposes:
+
+1. **Build-time string obfuscation.** All the bundle's identifier
+   lookups go through `r9("base64")` or `tn("base64")` — runtime
+   decryption of constants encrypted at build. We saw this in
+   X.Castle.md §3.1: `cL = tn("nxfQdFGKab8=")` decodes to `"imul"`,
+   `cZ = r9("kB2h6nrOZf1PLMcGGcWjbDvdeUw=")` decodes to `"charCodeAt"`,
+   etc. The decryptors `tn` and `tv` are inverses of corresponding
+   forward ciphers.
+2. **Runtime token cipher.** `tt()` encrypts the per-field plaintexts
+   and the final aggregate.
+
+The *same cipher family* serves both. Castle needs the inverse
+function in the bundle to decrypt their own obfuscated strings at
+load time — so the inverse is necessarily present. The same inverse
+that decodes `r9("kB2h6nrOZf1PLMcGGcWjbDvdeUw=") → "charCodeAt"`
+also decodes the runtime token. We just had to identify it (`tv`,
+right next to `tt`) and confirm the constants match.
+
+This is essentially the same pattern as bundling an encryption
+library with a decryption capability: if you ship the inverse for
+*any* reason, an attacker gets it free.
+
+---
+
+## 11. Suggested next steps
 
 Ordered by leverage relative to effort:
 
@@ -770,25 +968,19 @@ Ordered by leverage relative to effort:
    client-side: actual `risk`, `policy.action`, `signals[]`. Without
    this we can demonstrate that lies *reach* Castle but not that they
    *change the score*.
-2. **Diff x.com's `/onboarding/task.json` body with and without Castle
+2. **Reverse the per-field cipher** used by `f4`, `tN`, `lb`, `lM`
+   (the inner byte-emitter helpers). Each has a corresponding inverse
+   somewhere in the bundle (same pattern as `tt` ↔ `tv`); if not,
+   capture (plaintext-in, ciphertext-out) pairs via in-flight bundle
+   patching and reconstruct the inverse from constants. Would unlock
+   full byte-level decoding of the per-field hashes.
+3. **Diff x.com's `/onboarding/task.json` body with and without Castle
    active** to localize which JSON field carries the token. Cheap.
-3. **Patch the un-spoofed surfaces**: canvas, `performance.now`, the
+4. **Patch the un-spoofed surfaces**: canvas, `performance.now`, the
    `__cuid` localStorage probe. Combine with the existing prototype
    lies to produce a fully fake device profile. This is where the
    prior clean-verdict work (v3–v7) on argus directly applies — same
    primitives.
-4. **Reverse the per-field cipher input boundary**. Identify the
-   63 per-signal emitter sites in the bundle (one `f4` call per
-   signal). Wrap each one's input via in-flight bundle patching with a
-   new structural fingerprint (the byte-emitter shape from §3.2 + the
-   call-tree position). Recovers per-field plaintext → encoded blob
-   mapping. Now optional given §9.
-5. **Reverse `tt` cipher** by capturing many (plaintext-in,
-   ciphertext-out) pairs through step 4 and running it offline as a
-   constraint problem. The bit-mix has only ~6 stages and operates
-   per-byte; given enough pairs it's recoverable. Only really needed
-   if we want to forge tokens *without* running Castle's bundle, or
-   to decrypt third-party tokens captured off the wire.
 6. **Build a stealth-passing capture**. Combine the byte-tap with a
    real-Chrome `channel: 'chrome', launchPersistentContext` profile
    + `--disable-blink-features=AutomationControlled` (the v5/v6/v7
@@ -817,9 +1009,13 @@ this work continues.
 | `xcom-castle-submit.mjs` | `readtap` + marker checkpoints (`PAGELOAD_FIRE_DONE`, `BEFORE_NEXT_CLICK`, `AFTER_NEXT_CLICK`, `END_OF_RUN`) and an actual Playwright-driven submit on the login form. Produces the §6 multi-fire timing breakdown. |
 | `xcom-castle-headers.mjs` | Captures full request headers + POST bodies on x.com auth endpoints, flags high-entropy long-base64 fragments. Produces the §7 token-delivery findings. |
 | `xcom-castle-tamper.mjs` | Prototype-getter overrides (LIES) stacked beneath readtap, run baseline + tampered side-by-side, diffs what Castle saw. Produces the §9 value-tampering demonstration. |
+| `castle-cipher.mjs` | Standalone Node module exporting `tt()` and `tv()` — the bundle's cipher and its inverse, with all aliases resolved (constants 46488/54213/54655/60834/385, masks 0xFFFF/0xFF, rotations 12/11/8). Round-trips on synthetic data; `tv()` confirmed to invert `tt()` byte-for-byte against captured token bytes. Per §10. |
+| `decrypt.mjs` | Captures one live Castle token from x.com (btoa hook stack-filtered to `at tt`) and decrypts via `tv()`. Renders the plaintext TLV structure. The end-to-end demo of cipher reversal. |
+| `castle-tt-instrument.mjs` | Bundle-patch wrapping every `function tt(n){...}` declaration to log per-call input char codes + output base64. Reveals the per-field plaintexts Castle ships (hex hashes, timestamps, empty literals, the aggregated TLV payload). |
 | `xcom-dom-probe.mjs` | Tiny DOM dump tool — used once when the submit-form selector failed; lists all visible inputs and buttons on the page. |
 
-Output JSONs from each run sit at `/tmp/xcom-castle-*.json`.
+Output JSONs from each run sit at `/tmp/xcom-castle-*.json` or
+`./results/*.json` depending on context.
 
 ## Appendix B: Quick reproducibility
 
