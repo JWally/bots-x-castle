@@ -15,7 +15,7 @@ covers the May-15 vanilla Castle 2.8.4 baseline.
 > auth-flow load of a public x.com page. Does not submit credentials,
 > does not attempt to break into accounts, does not exfiltrate any
 > user data. Intended audience: Castle's own research team, and
-> argus / fingerprinting practitioners studying production hardening.
+> anti-bot / fingerprinting practitioners studying production hardening.
 
 ---
 

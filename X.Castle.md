@@ -255,7 +255,7 @@ build.
 This is the smart move. It pushes the attack surface up one layer (you
 have to hook the per-field encoders' *inputs*) and it eliminates the
 "one regex unlocks the whole payload" failure mode. The Castle.md
-recommendation in §6.2.a — "argus should NOT consolidate signal
+recommendation in §6.2.a — "a defender should NOT consolidate signal
 emission through one obvious entry point" — has been applied to
 Castle itself.
 
@@ -407,7 +407,7 @@ as our own bot-buster CDP-console-timing trap. The trick is:
    anti-bot wrappers that patch `Date.now` but not `performance.now`
    (or vice versa) all leak distinctive timing profiles.
 
-Note specifically: our v6/v7 clean-verdict attacks on argus exploited
+Note specifically: prior v6/v7 clean-verdict attacks on a comparable defender stack exploited
 the inverse — patching `performance.now` and `Date.now` together to
 hide CPU-bench-based automation detection. Castle is running the same
 class of detector. See `project_clean_verdict_v6_proxy_validates_this.md`
@@ -979,7 +979,7 @@ Ordered by leverage relative to effort:
 4. **Patch the un-spoofed surfaces**: canvas, `performance.now`, the
    `__cuid` localStorage probe. Combine with the existing prototype
    lies to produce a fully fake device profile. This is where the
-   prior clean-verdict work (v3–v7) on argus directly applies — same
+   prior clean-verdict work (v3–v7) on a comparable stack directly applies — same
    primitives.
 6. **Build a stealth-passing capture**. Combine the byte-tap with a
    real-Chrome `channel: 'chrome', launchPersistentContext` profile
@@ -997,7 +997,7 @@ Ordered by leverage relative to effort:
 
 ## Appendix A: Tooling inventory
 
-All ad-hoc, lives under `/tmp/`. Move into `ms-argus-bots/src/bots/` if
+All ad-hoc, lives under `/tmp/`. Move into a dedicated tooling repo if
 this work continues.
 
 | Script | Role |
